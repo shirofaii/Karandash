@@ -1,8 +1,12 @@
 var React = require('react')
 var render = require('react-dom').render
-var Root = require('./containers/Root')
-var createMainStore = require('./store/mainStore')
+var createStore = require('./store')
+var Provider = require('react-redux').Provider;
 
-const store = createMainStore();
+const store = createStore();
 
-render(React.createElement(Root, {store}), document.getElementById('rootPageContainer'));
+render(
+<Provider store={store}>
+    <br />
+</Provider>
+, document.getElementById('rootPageContainer'));
