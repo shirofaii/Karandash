@@ -1,10 +1,8 @@
-import Express from 'express';
+var Express = require('express')
 
 const app = new Express();
 
-app.use('/assets', Express.static('assets'));
-app.use('/img', Express.static('img'));
-app.use('/index.html', Express.static('index.html'));
+app.use('/', Express.static('wwwroot'));
 
 var port = process.env.PORT || 3000;
 

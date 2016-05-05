@@ -1,24 +1,23 @@
 var gulp = require('gulp');
 var browserify = require('browserify');
-var reactify = require('reactify');
 var babelify = require('babelify');
-var envify = require('envify');
 var source = require('vinyl-source-stream');
 var watchify = require('watchify')
 
-var bundler = browserify({ cache: {}, packageCache: {} })
-    .transform(babelify)
-    .transform(reactify, {"es6": true})
-    .transform(envify)
-    .add('src/js/app.js')
+var bundler = browserify('src/js/app.js', {
+        cache: {},
+        packageCache: {},
+        debug: false
+    })
+    .transform(babelify, {presets: ["es2015", "react"]})
 
 function bundle() {
     return bundler.bundle()
         .pipe(source('bundle.js'))
-        .pipe(gulp.dest('src/assets'));
+        .pipe(gulp.dest('src/wwwroot/assets'));
 }
 
-gulp.task('app-js', bundle);
+gulp.task('app', bundle);
 
 gulp.task('watch-js', function() {
     watchify.args.debug = true;

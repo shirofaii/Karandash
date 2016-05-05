@@ -11,7 +11,7 @@ gulp.task('styles', function() {
         .on('error', handleError)
         .pipe(autoprefixer())
         .pipe(rename('bundle.css'))
-        .pipe(gulp.dest('src/assets'));
+        .pipe(gulp.dest('src/wwwroot/assets'));
 });
 
 function handleError(err) {
