@@ -5,32 +5,39 @@ var source = require('vinyl-source-stream');
 var watchify = require('watchify')
 var uglifyify = require('uglifyify')
 
-var bundler = browserify('src/js/app.js', {
-        cache: {},
-        packageCache: {},
+var bundlerProd = browserify('src/js/app.js', {
         debug: false
     })
     .transform(babelify, {presets: ["es2015", "react"]})
     .transform(uglifyify, {global: true})
 
-function bundle() {
+var bundlerDev = browserify('src/js/app.js', {
+        cache: {},
+        packageCache: {},
+        debug: true
+    })
+    .transform(babelify, {presets: ["es2015", "react"]})
+
+
+function bundle(bundler) {
     return bundler.bundle()
         .on('error', e => console.error(e.message))
         .pipe(source('bundle.js'))
         .pipe(gulp.dest('src/wwwroot/assets'));
 }
 
-gulp.task('app', bundle);
+gulp.task('app-prod', f => bundle(bundlerProd));
+gulp.task('app-dev', f => bundle(bundlerDev));
 
 gulp.task('watch-js', function() {
     watchify.args.debug = true;
-    var watcher = watchify(bundler);
+    var watcher = watchify(bundlerDev);
     watcher.on('update', function() {
-        bundle()
+        bundle(bundlerDev)
     });
     watcher.on('log', function(log) {
         console.log(log)
     })
-    bundle();
+    bundle(bundlerDev);
     return watcher
 })

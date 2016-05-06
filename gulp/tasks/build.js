@@ -1,6 +1,6 @@
 var gulp = require('gulp');
 
 gulp.task('build', [
-    'app',
+    'app-prod',
     'styles'
 ]);
