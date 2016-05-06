@@ -1,7 +1,9 @@
 var Express = require('express')
+var compression = require('compression')
 
 const app = new Express();
 
+app.use(compression());
 app.use('/', Express.static('wwwroot'));
 
 var port = process.env.PORT || 3000;
