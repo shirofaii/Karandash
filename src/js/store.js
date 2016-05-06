@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import rootReducer from '../reducers';
+var rootReducer = require('./reducers');
 
-function createStore() {
+function createMainStore() {
     let devTool = f => f;
     if (typeof window !== 'undefined') {
         if (window.devToolsExtension) {
@@ -16,4 +16,4 @@ function createStore() {
     return finalCreateStore(rootReducer);
 }
 
-module.exports = createStore
+module.exports = createMainStore

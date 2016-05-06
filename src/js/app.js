@@ -9,4 +9,4 @@ render(
 <Provider store={store}>
     <br />
 </Provider>
-, document.getElementById('rootPageContainer'));
+, document.getElementById('root'));
