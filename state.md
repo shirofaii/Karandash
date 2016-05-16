@@ -3,7 +3,7 @@ editor state
 #### info
 * load map (url)
 * save map ()
-* show error ()
+* show error (error)
 * hide error ()
 
 ```

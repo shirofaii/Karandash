@@ -1,11 +1,13 @@
 var redux = require('redux')
 
-function placeholder(state, action) {
-    return {}
-}
+var info = require('./action/info.js').reducer
+var canvas = require('./action/canvas.js').reducer
+var camera = require('./action/camera.js').reducer
 
 const rootReducer = redux.combineReducers({
-    placeholder
+    info,
+    canvas,
+    camera
 });
 
 module.exports = rootReducer;
