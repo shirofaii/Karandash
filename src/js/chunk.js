@@ -1,7 +1,9 @@
 var imm = require('immutable');
 
-const bgWall = 0
-const bgFloor = 1
+const tiles = {
+    wall: 0,
+    floor: 1
+}
 
 const sideInTiles = 8
 const tileInPixels = 32
@@ -23,41 +25,45 @@ class ChunkedBitmap {
     }
     
     // x, y: canvas coords
-    function chunkAt(x, y) {
-        var xy = new Int32Array(2)
-        xy[0] = Math.trunc(x / sideInTiles)
-        xy[1] = Math.trunc(y / sideInTiles)
-        return this.state.get(xy)
+    chunkAt(x, y) {
+        return this.state.get(this.encodeXY(x, y))
     }
     
     // x, y: canvas coords
-    function getTile(x, y) {
+    getTile(x, y) {
         var chunk = this.chunkAt(x, y)
         if(!chunk) return null
         
-        x = x % sideInTiles
-        y = y % sideInTiles
-        return chunk[y*sideInTiles + x]
+        var cx = x % sideInTiles
+        var cy = y % sideInTiles
+        if(cx < 0) cx += sideInTiles
+        if(cy < 0) cy += sideInTiles
+        
+        return chunk[cy*sideInTiles + cx]
     }
     
     // x, y: canvas coords
-    function setTile(x, y, tile) {
-        var chunk = chunkAt(x, y)
+    setTile(x, y, tile) {
+        var chunk = this.chunkAt(x, y)
         // cx, cy: chunk coords
         var cx = x % sideInTiles
         var cy = y % sideInTiles
         
+        if(cx < 0) cx += sideInTiles
+        if(cy < 0) cy += sideInTiles
+        
         // its common to set tile on each mouse event, so avoid unnesessary mutations
         if(!chunk || chunk[cy*sideInTiles + cx] !== tile) {
             // copy chunk binary data, state must be immutable
-            var editable = newChunk(chunk)
+            var editable = this.newChunk(chunk)
             editable[cy*sideInTiles + cx] = tile
-            setChunk(x, y, editable)
+            
+            this.setChunk(x, y, editable)
         }
     }
     
     // copy or create byte array which actually 8x8 bitmap (bytemap) of tiles
-    function newChunk(from) {
+    newChunk(from) {
         var to = new Uint8Array(sideInTiles*sideInTiles);
         if(from) { to.set(from) }
         return to
@@ -65,14 +71,20 @@ class ChunkedBitmap {
     
     // set changed (or new) chunk into the state
     // x, y: canvas coords
-    function setChunk(x, y, chunk) {
-        var xy = new Int32Array(2)
-        xy[0] = Math.trunc(x / sideInTiles)
-        xy[1] = Math.trunc(y / sideInTiles)
-        
-        var chunk = chunk || tilesArray()
-        
-        this.state.set(xy, chunk)
+    setChunk(x, y, chunk) {
+        chunk = chunk || this.newChunk()
+        this.state = this.state.set(this.encodeXY(x, y), chunk)
+    }
+    
+    /*
+        Encode x and y into 31 unsigned int
+        Used as hash for chunks map
+        [<unsed bit><x: 15 bits><y: 15 bits>]
+        x and y can be in range -16383 16384
+    */
+    encodeXY(x, y) {
+        return ((Math.trunc(x / sideInTiles) + 16383) << 15) + Math.trunc(y / sideInTiles) + 16383
     }
 }
 
+module.exports = ChunkedBitmap
