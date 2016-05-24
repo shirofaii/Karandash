@@ -11,11 +11,10 @@ var MapCanvas = React.createClass({
     
     chunks: function() {
         return this.props.canvas.chunks.map((bitmap, code) => {
-            
             var x = (code >> 15) - 16383
             var y = (code & 0x7fff) - 16383
-            return <Chunk x={x} y={y} bitmap={bitmap} />
-        })
+            return <Chunk x={x} y={y} bitmap={bitmap} key={code} />
+        }).toArray()
     },
     
     render: function() {
