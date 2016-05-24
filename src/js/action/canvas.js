@@ -1,4 +1,5 @@
 var imm = require('immutable');
+var Bitmap = require('../chunk.js')
 
 var Canvas = imm.Record({
     pen: null,
@@ -20,12 +21,11 @@ function reducer(state = new Canvas(), action) {
                 penPosition: {x: action.x, y: action.y}
             })
         case 'LINE_TO':
+            var bitmap = new Bitmap(state.chunks)
+            bitmap.line(state.get('penPosition').get('x'), state.get('penPosition').get('y'), action.x, action.y, state.get('pen'))
             return state.merge({
-                
-            })
-        case 'RECT_TO':
-            return state.merge({
-                
+                chunks: bitmap.state,
+                penPosition: {x: action.x, y: action.y}
             })
         case 'DRAW_END':
             return state.merge({
@@ -58,13 +58,6 @@ function lineTo(x, y) {
     })}
 }
 
-function rectTo(x, y) {
-    return dispatch => {dispatch({
-        type: 'RECT_TO',
-        x, y
-    })}
-}
-
 function drawEnd() {
     return dispatch => {dispatch({
         type: 'DRAW_END'
@@ -72,4 +65,4 @@ function drawEnd() {
 }
 
 
-module.exports = {reducer, action: {setPen, drawBegin, lineTo, rectTo, drawEnd}}
+module.exports = {reducer, action: {setPen, drawBegin, lineTo, drawEnd}}

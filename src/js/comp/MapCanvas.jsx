@@ -1,6 +1,6 @@
 var React = require('react');
 var Redux = require('react-redux');
-var px = require('react-pixi')
+//var px = require('react-pixi')
 var Chunk = require('./Chunk.jsx')
 
 var MapCanvas = React.createClass({
@@ -10,13 +10,18 @@ var MapCanvas = React.createClass({
     },
     
     chunks: function() {
-        return this.props.canvas.chunks.map((c, p) => <Chunk x={p.x} y={p.y} bitmap={c} />)
+        return this.props.canvas.chunks.map((bitmap, code) => {
+            
+            var x = (code >> 15) - 16383
+            var y = (code & 0x7fff) - 16383
+            return <Chunk x={x} y={y} bitmap={bitmap} />
+        })
     },
     
     render: function() {
-        return <px.Stage width={800} height={800} >
+        return <div>
             {this.chunks()}
-        </px.Stage>
+        </div>
     }
 });
 

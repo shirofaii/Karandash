@@ -76,11 +76,25 @@ class ChunkedBitmap {
         this.state = this.state.set(this.encodeXY(x, y), chunk)
     }
     
+    line(x0, y0, x1, y1, tile) {
+        var dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+        var dy = Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1; 
+        var err = (dx > dy ? dx : -dy) / 2;
+
+        while (true) {
+            this.setTile(x0, y0, tile);
+            if (x0 === x1 && y0 === y1) break;
+            var e2 = err;
+            if (e2 > -dx) { err -= dy; x0 += sx; }
+            if (e2 < dy) { err += dx; y0 += sy; }
+        }
+    }
+    
     /*
         Encode x and y into 31 unsigned int
         Used as hash for chunks map
-        [<unsed bit><x: 15 bits><y: 15 bits>]
-        x and y can be in range -16383 16384
+        [<unused bit><x: 15 bits><y: 15 bits>]
+        x and y should be in range -16383 16384
     */
     encodeXY(x, y) {
         return ((Math.trunc(x / sideInTiles) + 16383) << 15) + Math.trunc(y / sideInTiles) + 16383

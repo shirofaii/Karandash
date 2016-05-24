@@ -7,12 +7,12 @@ editor state
 * hide error ()
 
 ```
-info: {
+info: Record {
     title: 'aaa'
     url: ''
     isLoading: false
     isSaving: false
-    errors: ['message']
+    errors: List ['message']
 }
 ```
 
@@ -20,18 +20,20 @@ info: {
 * setPen (tile)
 * drawBegin (x, y)
 * lineTo (x, y)
-* rectTo (x, y)
 * drawEnd ()
 
 ```
-canvas: {
+canvas: Record {
     pen: tile,
     penPosition: point
     isDrawing: false
     
     chunks: Map { [x, y]: chunk }
-        chunk is 8x8 layered binary map [ Uint8(8*8) , ... ]
-}
+        chunk is 8x8 bitmap Uint8(8*8)
+        [x, y] represented as 31-bit unsigned number where
+            [<unused bit (0)><x: 15 bits><y: 15 bits>]
+            x and y should be in range -16383 16384
+
 ```
 
 #### camera
@@ -40,7 +42,7 @@ center in pixels, zoom factor
 * move camera (dx, dy, dz)
 
 ```
-camera: {x: 0, y: 0, zoom: 1.0}
+camera: Record {x: 0, y: 0, zoom: 1.0}
 ```
 
 #### texts
