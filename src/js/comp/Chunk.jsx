@@ -48,12 +48,7 @@ var Chunk = React.createClass({
     },
     
     render: function() {
-        var style = {
-            position: 'fixed',
-            left: this.props.x * sideInPixels,
-            top: this.props.y * sideInPixels
-        }
-        return <svg style={style} width={sideInPixels} height={sideInPixels}>
+        return <svg x={this.props.x * sideInPixels} y={this.props.y * sideInPixels} width={sideInPixels} height={sideInPixels}>
             {this.drawBitmap()}
         </svg>
     }

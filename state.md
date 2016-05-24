@@ -39,7 +39,8 @@ canvas: Record {
 #### camera
 center in pixels, zoom factor
 
-* move camera (dx, dy, dz)
+* move camera (dx, dy)
+* zoom (zoom)
 
 ```
 camera: Record {x: 0, y: 0, zoom: 1.0}

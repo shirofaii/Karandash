@@ -14,10 +14,32 @@ var MapEditor = React.createClass({
         camera: React.PropTypes.object.isRequired
     },
     
+    getInitialState: function() {
+        return {
+            windowWidth: window.innerWidth,
+            windowHeight: window.innerHeight
+        };
+    },
+    
+    handleResize: function(e) {
+        this.setState({
+            windowWidth: window.innerWidth,
+            windowHeight: window.innerHeight
+        });
+    },
+    
+    componentDidMount: function() {
+        window.addEventListener('resize', this.handleResize);
+    },
+    
+    componentWillUnmount: function() {
+        window.removeEventListener('resize', this.handleResize);
+    },
+    
     render: function() {
         return <div>
             <h1>{this.props.title}</h1>
-            <MapCanvas canvas={this.props.canvas} camera={this.props.camera} />
+            <MapCanvas canvas={this.props.canvas} camera={this.props.camera} width={this.state.windowWidth} height={this.state.windowHeight} />
         </div>
     }
 });

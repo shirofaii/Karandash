@@ -11,20 +11,31 @@ function reducer(state = new Camera(), action) {
         case 'MOVE_CAMERA':
             return state.merge({
                 x: state.x + action.dx,
-                y: state.y + action.dy,
-                z: state.z + action.dz
+                y: state.y + action.dy
             })
+        case 'ZOOM':
+            return state.merge({
+                zoom: action.zoom
+            })
+
         default:
             return state;
     }
 }
 
-function moveCamera(dx, dy, dz) {
+function moveCamera(dx, dy) {
     return dispatch => {dispatch({
         type: 'MOVE_CAMERA',
-        dx, dy, dz
+        dx, dy
+    })}
+}
+
+function zoom(zoom) {
+    return dispatch => {dispatch({
+        type: 'ZOOM',
+        zoom
     })}
 }
 
 
-module.exports = {reducer, action: {moveCamera}}
+module.exports = {reducer, action: {moveCamera, zoom}}
