@@ -24,17 +24,17 @@ function reducer(state = new Camera(), action) {
 }
 
 function moveCamera(dx, dy) {
-    return dispatch => {dispatch({
+    return {
         type: 'MOVE_CAMERA',
         dx, dy
-    })}
+    }
 }
 
 function zoom(zoom) {
-    return dispatch => {dispatch({
+    return {
         type: 'ZOOM',
         zoom
-    })}
+    }
 }
 
 

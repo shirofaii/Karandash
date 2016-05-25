@@ -4,6 +4,7 @@ var Redux = require('react-redux');
 var Chunk = require('./Chunk.jsx')
 var Bitmap = require('../chunk.js')
 var _ = require('lodash')
+var Cursor = require('./Cursor.jsx')
 
 var MapCanvas = React.createClass({
     propTypes: {
@@ -29,11 +30,29 @@ var MapCanvas = React.createClass({
         ], ' ')
     },
     
+    // delegate all input to Cursor
+    onMouseDown: function(e) {this.refs.cursor.onMouseDown(e)},
+    onMouseUp: function(e) {this.refs.cursor.onMouseUp(e)},
+    onMouseEnter: function(e) {this.refs.cursor.onMouseEnter(e)},
+    onMouseLeave: function(e) {this.refs.cursor.onMouseLeave(e)},
+    onMouseMove: function(e) {this.refs.cursor.onMouseMove(e)},
+    
     render: function() {
-        return <svg className='canvas' ref='canvas' viewBox={this.viewBox()} width={this.props.width} height={this.props.height}>
-            {this.chunks()}
+        return <svg
+                className='canvas'
+                viewBox={this.viewBox()}
+                width={this.props.width}
+                height={this.props.height}
+                onMouseDown={this.onMouseDown}
+                onMouseUp={this.onMouseUp}
+                onMouseEnter={this.onMouseEnter}
+                onMouseLeave={this.onMouseLeave}
+                onMouseMove={this.onMouseMove}
+                >
+            <Cursor ref='cursor' dispatch={this.props.dispatch}/>
+            <g>{this.chunks()}</g>
         </svg>
     }
 });
 
-module.exports = MapCanvas;
+module.exports = Redux.connect()(MapCanvas);

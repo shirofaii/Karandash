@@ -38,30 +38,30 @@ function reducer(state = new Canvas(), action) {
 }
 
 function setPen(tile) {
-    return dispatch => {dispatch({
+    return {
         type: 'SET_PEN',
         tile
-    })}
+    }
 }
 
 function drawBegin(x, y) {
-    return dispatch => {dispatch({
+    return {
         type: 'DRAW_BEGIN',
         x, y
-    })}
+    }
 }
 
 function lineTo(x, y) {
-    return dispatch => {dispatch({
+    return {
         type: 'LINE_TO',
         x, y
-    })}
+    }
 }
 
 function drawEnd() {
-    return dispatch => {dispatch({
+    return {
         type: 'DRAW_END'
-    })}
+    }
 }
 
 
