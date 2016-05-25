@@ -10,12 +10,12 @@ const tileInPixels = 32
 const sideInPixels = sideInTiles * tileInPixels
 
 
-/* chunked canvas layer
-    all bitmap canvas splitted to 8x8 chunks, and only required pairs of <coord, chunk> stored in state
+/* chunked bitmap
+    all bitmap splitted to 8x8 chunks, and only edited chunks saved in state as pairs of <coord, chunk>
     Reasons to use chunks:
     * canvas part of state and must be immutable. Its quite expensive in one-solid-bitmap case to make copy on each change for even pretty small bitmap
-    * canvas size limited by max x, y coords in uint32
     * probably more memory efficient
+    * canvas size very big, limited by (sint15 * sideInTiles)
 */
 
 class ChunkedBitmap {
@@ -26,7 +26,7 @@ class ChunkedBitmap {
     
     // x, y: canvas coords
     chunkAt(x, y) {
-        return this.state.get(this.encodeXY(x, y))
+        return this.state.get(ChunkedBitmap.encodeXY(x, y))
     }
     
     // x, y: canvas coords
@@ -73,7 +73,7 @@ class ChunkedBitmap {
     // x, y: canvas coords
     setChunk(x, y, chunk) {
         chunk = chunk || this.newChunk()
-        this.state = this.state.set(this.encodeXY(x, y), chunk)
+        this.state = this.state.set(ChunkedBitmap.encodeXY(x, y), chunk)
     }
     
     line(x0, y0, x1, y1, tile) {
@@ -90,14 +90,36 @@ class ChunkedBitmap {
         }
     }
     
+    log() {
+        this.state.forEach((c, i) => {
+            var p = ChunkedBitmap.decodeXY(i)
+            process.stdout.write('[' + p.x + ', ' + p.y + ']:\n')
+            for(var cy = 0; cy < sideInTiles; cy++) {
+                for(var cx = 0; cx < sideInTiles; cx++) {
+                    var tile = c[cy*sideInTiles + cx]
+                    switch(tile) {
+                        case 0: process.stdout.write("#"); break;
+                        case 1: process.stdout.write("."); break;
+                        default: process.stdout.write("Ё"); break;
+                    }
+                }
+                process.stdout.write('\n')
+            }
+        })
+    }
+    
     /*
         Encode x and y into 31 unsigned int
         Used as hash for chunks map
         [<unused bit><x: 15 bits><y: 15 bits>]
         x and y should be in range -16383 16384
     */
-    encodeXY(x, y) {
+    static encodeXY(x, y) {
         return ((Math.trunc(x / sideInTiles) + 16383) << 15) + Math.trunc(y / sideInTiles) + 16383
+    }
+    
+    static decodeXY(i) {
+        return {x: (i >> 15) - 16383, y: (i & 0x7fff) - 16383}
     }
 }
 

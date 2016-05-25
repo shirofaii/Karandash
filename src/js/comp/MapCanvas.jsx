@@ -2,6 +2,7 @@ var React = require('react');
 var Redux = require('react-redux');
 //var px = require('react-pixi')
 var Chunk = require('./Chunk.jsx')
+var Bitmap = require('../chunk.js')
 var _ = require('lodash')
 
 var MapCanvas = React.createClass({
@@ -14,10 +15,8 @@ var MapCanvas = React.createClass({
     
     chunks: function() {
         return this.props.canvas.chunks.map((bitmap, code) => {
-            var x = (code >> 15) - 16383
-            var y = (code & 0x7fff) - 16383
-            
-            return <Chunk x={x} y={y} bitmap={bitmap} key={code} />
+            var p = Bitmap.decodeXY(code)
+            return <Chunk x={p.x} y={p.y} bitmap={bitmap} key={code} />
         }).toArray()
     },
     
