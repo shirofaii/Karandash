@@ -1,8 +1,8 @@
 var React = require('react');
 var Redux = require('react-redux');
 
-var camera = require('../action/camera.js').action
-var canvas = require('../action/canvas.js').action
+var camera = require('../action/camera.js')
+var canvas = require('../action/canvas.js')
 
 /*
     Component handle all input related to MapCanvas, responsible for:
@@ -12,33 +12,32 @@ var canvas = require('../action/canvas.js').action
     * change cursor appearance
 */
 
+const tileInPixels = 32
+
 var Cursor = React.createClass({
     onMouseDown: function(e) {
         this.mouseX = e.clientX
         this.mouseY = e.clientY
         if(this.spacePressed) {
-            this.setState({ isDragged: true })
+            this.startMoving()
         } else {
-            
+            this.startDrawing()
         }
     },
     onMouseUp: function(e) {
+        this.stopDrawing()
+        this.stopMoving()
         this.mouseX = null
         this.mouseY = null
-        this.setState({ isDragged: false })
     },
     onMouseEnter: function(e) {},
     onMouseLeave: function(e) {},
     onBlur: function(e) { this.reset() },
     onMouseMove: function(e) {
-        if(this.state.isDragged) {
-            var dx = this.mouseX - e.clientX
-            var dy = this.mouseY - e.clientY
-            this.props.dispatch(camera.moveCamera(dx, dy))
-        }
+        this.moving(e)
+        this.drawing(e)
         this.mouseX = e.clientX
         this.mouseY = e.clientY
-        
     },
     onKeyDown: function(e) {
         if(e.code === 'Space') {
@@ -48,21 +47,58 @@ var Cursor = React.createClass({
     onKeyUp: function(e) {
         if(e.code === 'Space') {
             this.spacePressed = false
-            this.setState({ isDragged: false })
+            this.stopMoving()
         }
+    },
+    
+    startMoving: function() {
+        this.isMoving = true
+    },
+    moving: function(e) {
+        if(this.isMoving) {
+            var dx = this.mouseX - e.clientX
+            var dy = this.mouseY - e.clientY
+            this.props.dispatch(camera.action.moveCamera(dx, dy))
+        }
+    },
+    stopMoving: function() {
+        if(!this.isMoving) return
+        
+        this.isMoving = false
+    },
+    
+    startDrawing: function() {
+        this.isDrawing = true
+        this.props.dispatch(canvas.action.setPen(1))
+        var p = this.mouseToTile({x: this.mouseX, y: this.mouseY})
+        this.props.dispatch(canvas.action.drawBegin(p.x, p.y))
+    },
+    drawing: function(e) {
+        if(this.isDrawing) {
+            var f = this.mouseToTile({x: this.mouseX, y: this.mouseY})
+            var t = this.mouseToTile({x: e.clientX, y: e.clientY})
+            this.props.dispatch(canvas.action.lineTo(f.x, f.y, t.x, t.y))
+        }
+    },
+    stopDrawing: function() {
+        if(!this.isDrawing) return
+        
+        this.props.dispatch(canvas.action.drawEnd())
+        this.isDrawing = false
+    },
+    
+    mouseToTile: function(m) {
+        m.x = Math.floor((this.props.camera.x - this.props.width / 2 + m.x) / tileInPixels)
+        m.y = Math.floor((this.props.camera.y - this.props.height / 2 + m.y) / tileInPixels)
+        return m
     },
     
     reset: function() {
         this.mouseX = null
         this.mouseY = null
         this.spacePressed = false
-        this.setState(this.getInitialState())
-    },
-    
-    getInitialState: function() {
-        return {
-            isDragged: false
-        };
+        this.stopMoving()
+        this.stopDrawing()
     },
     
     componentDidMount: function() {
@@ -78,11 +114,6 @@ var Cursor = React.createClass({
     },
     
     render: function() {
-        if(this.state.isDragged) {
-            document.body.style.cursor = "move";
-        } else {
-            document.body.style.cursor = "default";
-        }
         return null
     }
 });

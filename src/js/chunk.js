@@ -19,9 +19,10 @@ const sideInPixels = sideInTiles * tileInPixels
 */
 
 class ChunkedBitmap {
-    constructor(chunks) {
+    on(chunks) {
         // imm.Map <Int32Array[x, y], Uint8Array[64]>
         this.state = chunks
+        return this
     }
     
     // x, y: canvas coords
@@ -77,16 +78,23 @@ class ChunkedBitmap {
     }
     
     line(x0, y0, x1, y1, tile) {
-        var dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-        var dy = Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1; 
-        var err = (dx > dy ? dx : -dy) / 2;
+        var dx = Math.abs(x1 - x0)
+        var dy = -Math.abs(y1 - y0)
+        var sx = x0 < x1 ? 1 : -1;
+        var sy = y0 < y1 ? 1 : -1;
+        var err = dx + dy;
 
         while (true) {
+            if(x0 === x1 && y0 === y1) break;
+            var e2 = 2 * err;
+            if (e2 > dy) {
+                err += dy
+                x0 += sx
+            } else if (e2 < dx) {
+                err += dx
+                y0 += sy
+            }
             this.setTile(x0, y0, tile);
-            if (x0 === x1 && y0 === y1) break;
-            var e2 = err;
-            if (e2 > -dx) { err -= dy; x0 += sx; }
-            if (e2 < dy) { err += dx; y0 += sy; }
         }
     }
     
@@ -115,11 +123,11 @@ class ChunkedBitmap {
         x and y should be in range -16383 16384
     */
     static encodeXY(x, y) {
-        return ((Math.trunc(x / sideInTiles) + 16383) << 15) + Math.trunc(y / sideInTiles) + 16383
+        return ((Math.floor(x / sideInTiles) + 16383) << 15) + Math.floor(y / sideInTiles) + 16383
     }
     
     static decodeXY(i) {
-        return {x: (i >> 15) - 16383, y: (i & 0x7fff) - 16383}
+        return {x: (i >>> 15) - 16383, y: (i & 0x00007fff) - 16383}
     }
 }
 

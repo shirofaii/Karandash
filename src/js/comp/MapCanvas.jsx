@@ -49,7 +49,7 @@ var MapCanvas = React.createClass({
                 onMouseLeave={this.onMouseLeave}
                 onMouseMove={this.onMouseMove}
                 >
-            <Cursor ref='cursor' dispatch={this.props.dispatch}/>
+            <Cursor ref='cursor' dispatch={this.props.dispatch} height={this.props.height} width={this.props.width} camera={this.props.camera} />
             <g>{this.chunks()}</g>
         </svg>
     }
