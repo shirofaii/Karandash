@@ -31,7 +31,7 @@ var Cursor = React.createClass({
         this.mouseY = null
     },
     onMouseEnter: function(e) {},
-    onMouseLeave: function(e) {},
+    onMouseLeave: function(e) { this.reset() },
     onBlur: function(e) { this.reset() },
     onMouseMove: function(e) {
         this.moving(e)
