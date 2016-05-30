@@ -77,6 +77,8 @@ var Cursor = React.createClass({
         if(this.isDrawing) {
             var f = this.mouseToTile({x: this.mouseX, y: this.mouseY})
             var t = this.mouseToTile({x: e.clientX, y: e.clientY})
+            if(f.x === t.x && f.y === t.y) return;
+            
             this.props.dispatch(canvas.action.lineTo(f.x, f.y, t.x, t.y))
         }
     },
