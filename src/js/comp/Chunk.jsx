@@ -2,16 +2,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var PureRenderMixin = require('react-addons-pure-render-mixin');
 var Redux = require('react-redux');
-//var px = require('react-pixi')
-
-const tiles = {
-    wall: 0,
-    floor: 1
-}
-
-const sideInTiles = 8
-const tileInPixels = 32
-const sideInPixels = sideInTiles * tileInPixels
+import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
 
 
 var Chunk = React.createClass({

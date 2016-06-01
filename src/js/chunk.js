@@ -1,14 +1,5 @@
 var imm = require('immutable');
-
-const tiles = {
-    wall: 0,
-    floor: 1
-}
-
-const sideInTiles = 8
-const tileInPixels = 32
-const sideInPixels = sideInTiles * tileInPixels
-
+import {sideInTiles} from './const.js'
 
 /* chunked bitmap
     all bitmap splitted to 8x8 chunks, and only edited chunks saved in state as pairs of <coord, chunk>

@@ -4,6 +4,8 @@ var Redux = require('react-redux');
 var camera = require('../action/camera.js')
 var canvas = require('../action/canvas.js')
 
+import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
+
 /*
     Component handle all input related to MapCanvas, responsible for:
     * working with window-wide event listeners (because canvas have no focus)
@@ -11,8 +13,6 @@ var canvas = require('../action/canvas.js')
     * emit redux actions
     * change cursor appearance
 */
-
-const tileInPixels = 32
 
 var Cursor = React.createClass({
     onMouseDown: function(e) {
