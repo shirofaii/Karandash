@@ -1,5 +1,4 @@
 var React = require('react');
-var ReactDOM = require('react-dom');
 var PureRenderMixin = require('react-addons-pure-render-mixin');
 var Redux = require('react-redux');
 import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
@@ -14,43 +13,39 @@ var Chunk = React.createClass({
     },
     mixins: [PureRenderMixin],
     
-    componentDidMount: function() {
-        this.drawBitmap()
-    },
-    
-    componentDidUpdate: function(prevProps) {
-        this.drawBitmap()
-    },
-    
     // x, y cords in chunk space
-    drawWall: function(x, y, ctx) {
-        ctx.fillStyle = 'black'
-        ctx.fillRect(x * tileInPixels, y * tileInPixels, tileInPixels, tileInPixels)
+    drawWall: function(x, y, i) {
+        var style = {
+            fill: 'rgb(0, 0, 0)'
+        }
+        return <rect x={x * tileInPixels} y={y * tileInPixels} width={tileInPixels} height={tileInPixels} style={style} key={i} />
     },
-    drawFloor: function(x, y, ctx) {
-        ctx.fillStyle = 'gray'
-        ctx.fillRect(x * tileInPixels, y * tileInPixels, tileInPixels, tileInPixels)
+    drawFloor: function(x, y, i) {
+        var style = {
+            fill: 'rgb(200, 200, 200)'
+        }
+        return <rect x={x * tileInPixels} y={y * tileInPixels} width={tileInPixels} height={tileInPixels} style={style} key={i} />
     },
     
     drawBitmap: function() {
-        var canvas = ReactDOM.findDOMNode(this.refs.canvas)
-        var ctx = canvas.getContext('2d')
+        var result = []
         for(var i = 0; i < sideInTiles*sideInTiles; i++) {
             var e = this.props.bitmap[i]
             var x = i % sideInTiles
             var y = Math.trunc(i / sideInTiles)
             switch(e) {
-                case 0: this.drawFloor(x, y, ctx); break;
-                case 1: this.drawWall(x, y, ctx); break;
+                case 0: result.push(this.drawFloor(x, y, i)); break;
+                case 1: result.push(this.drawWall(x, y, i)); break;
                 default: throw 'wrong tile';
             }
         }
+        return result
     },
     
     render: function() {
-        return <foreignObject x={this.props.x * sideInPixels} y={this.props.y * sideInPixels} width={sideInPixels} height={sideInPixels}>
-            <canvas ref='canvas' width={sideInPixels} height={sideInPixels} />
-        </foreignObject>
+        return <svg x={this.props.x * sideInPixels} y={this.props.y * sideInPixels} width={sideInPixels} height={sideInPixels}>
+            {this.drawBitmap()}
+        </svg>
     }
 });
 
