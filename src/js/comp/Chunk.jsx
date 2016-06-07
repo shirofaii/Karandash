@@ -9,7 +9,8 @@ var Chunk = React.createClass({
     propTypes: {
         x: React.PropTypes.number.isRequired,
         y: React.PropTypes.number.isRequired,
-        bitmap: React.PropTypes.object.isRequired
+        bitmap: React.PropTypes.object.isRequired,
+        nbitmap: React.PropTypes.object.isRequired
     },
     mixins: [PureRenderMixin],
     

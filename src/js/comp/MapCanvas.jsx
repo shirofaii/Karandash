@@ -14,12 +14,6 @@ var MapCanvas = React.createClass({
         height: React.PropTypes.number.isRequired
     },
     
-    chunks: function() {
-        return this.props.canvas.chunks.map((bitmap, code) => {
-            var p = Bitmap.decodeXY(code)
-            return <Chunk x={p.x} y={p.y} bitmap={bitmap} key={code} />
-        }).toArray()
-    },
     
     viewBox: function() {
         return _.join([
@@ -50,7 +44,7 @@ var MapCanvas = React.createClass({
                 onMouseMove={this.onMouseMove}
                 >
             <Cursor ref='cursor' dispatch={this.props.dispatch} height={this.props.height} width={this.props.width} camera={this.props.camera} />
-            <g>{this.chunks()}</g>
+            <Background chunks={this.props.canvas.chunks}/>
         </svg>
     }
 });

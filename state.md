@@ -29,11 +29,11 @@ canvas: Record {
     isDrawing: false
     
     chunks: Map { [x, y]: chunk }
-        chunk is 8x8 bitmap Uint8(8*8)
+        chunk is long Uint8 array contained NxN bitmap Uint8(N*N) of tiles (256 types of land)
         [x, y] represented as 31-bit unsigned number where
             [<unused bit (0)><x: 15 bits><y: 15 bits>]
             x and y should be in range -16383 16384
-
+    }
 ```
 
 #### camera
