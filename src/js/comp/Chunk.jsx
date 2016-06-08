@@ -45,6 +45,7 @@ var Chunk = React.createClass({
     render: function() {
         return <svg x={this.props.x * sideInPixels} y={this.props.y * sideInPixels} width={sideInPixels} height={sideInPixels}>
             {this.drawBitmap()}
+            <rect x="0" y="0" width={sideInPixels} height={sideInPixels} fill="url(#gridPattern)" />
         </svg>
     }
 });

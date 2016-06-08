@@ -5,6 +5,8 @@ var Chunk = require('./Chunk.jsx')
 var Bitmap = require('../chunk.js')
 var _ = require('lodash')
 var Cursor = require('./Cursor.jsx')
+var Background = require('./Background.jsx')
+import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
 
 var MapCanvas = React.createClass({
     propTypes: {
@@ -43,8 +45,13 @@ var MapCanvas = React.createClass({
                 onMouseLeave={this.onMouseLeave}
                 onMouseMove={this.onMouseMove}
                 >
+            <defs>
+                <pattern id="gridPattern" width={tileInPixels} height={tileInPixels} patternUnits="userSpaceOnUse">
+                        <path d={"M0,0 L0,"+tileInPixels+" L"+tileInPixels+","+tileInPixels} stroke="gray" strokeWidth="1" fill="none" />
+                </pattern>
+            </defs>
+            <Background chunks={this.props.canvas.chunks} />
             <Cursor ref='cursor' dispatch={this.props.dispatch} height={this.props.height} width={this.props.width} camera={this.props.camera} />
-            <Background chunks={this.props.canvas.chunks}/>
         </svg>
     }
 });
