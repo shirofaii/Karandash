@@ -8,7 +8,7 @@ import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
 
 /*
     Component handle all input related to MapCanvas, responsible for:
-    * working with window-wide event listeners (because canvas have no focus)
+    * working with window-wide event listeners (because canvas has no focus)
     * have its own state
     * emit redux actions
     * change cursor appearance

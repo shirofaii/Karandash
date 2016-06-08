@@ -24,15 +24,24 @@ info: Record {
 
 ```
 canvas: Record {
-    pen: tile,
+    pen: tile
     penPosition: point
     isDrawing: false
-    
+    defaultBackgroundTile: tile
     chunks: Map { [x, y]: chunk }
-        chunk is long Uint8 array contained NxN bitmap Uint8(N*N) of tiles (256 types of land)
         [x, y] represented as 31-bit unsigned number where
             [<unused bit (0)><x: 15 bits><y: 15 bits>]
             x and y should be in range -16383 16384
+        chunk: {
+            background: uint8 array
+            nbitmap: uint8 array
+        }
+        background
+            is long Uint8 array contained NxN bitmap Uint8(N*N) of tiles (256 types of land)
+        nbitmap
+            contains compilation of all neighbours for each tile, its simplifies visual rendering for walls
+            format uint8, each bit represent neighbour side from top on clockwise  [t tr r rb b bl l lt]
+            
     }
 ```
 

@@ -5,7 +5,7 @@ var Canvas = imm.Record({
     pen: null,
     penPosition: null,
     isDrawing: false,
-    
+    defaultBackgroundTile: 1,
     chunks: imm.Map()
 })
 
@@ -18,14 +18,14 @@ function reducer(state = new Canvas(), action) {
                 pen: action.tile
             })
         case 'DRAW_BEGIN':
-            bitmap.on(state.chunks).setTile(action.x, action.y, state.get('pen'))
+            bitmap.on(state).setTile(action.x, action.y, state.get('pen'))
             return state.merge({
                 isDrawing: true,
                 penPosition: {x: action.x, y: action.y},
                 chunks: bitmap.state
             })
         case 'LINE_TO':
-            bitmap.on(state.chunks).line(state.get('penPosition').get('x'), state.get('penPosition').get('y'), action.x, action.y, state.get('pen'))
+            bitmap.on(state).line(state.get('penPosition').get('x'), state.get('penPosition').get('y'), action.x, action.y, state.get('pen'))
             return state.merge({
                 chunks: bitmap.state,
                 penPosition: {x: action.x, y: action.y}

@@ -2,7 +2,7 @@ var imm = require('immutable');
 import {sideInTiles} from './const.js'
 
 /* chunked bitmap
-    all bitmap splitted to 8x8 chunks, and only edited chunks saved in state as pairs of <coord, chunk>
+    all bitmap splitted to NxN chunks, and only edited chunks saved in state as pairs of <coord, chunk>
     Reasons to use chunks:
     * canvas part of state and must be immutable. Its quite expensive in one-solid-bitmap case to make copy on each change for even pretty small bitmap
     * probably more memory efficient
@@ -10,9 +10,9 @@ import {sideInTiles} from './const.js'
 */
 
 class ChunkedBitmap {
-    on(chunks) {
-        // imm.Map <Int32Array[x, y], Uint8Array[64]>
-        this.state = chunks
+    on(canvas) {
+        this.state = canvas.chunks
+        this.defaultTile = canvas.defaultBackgroundTile
         return this
     }
     
@@ -31,7 +31,7 @@ class ChunkedBitmap {
         if(cx < 0) cx += sideInTiles
         if(cy < 0) cy += sideInTiles
         
-        return chunk[cy*sideInTiles + cx]
+        return chunk.background[cy*sideInTiles + cx]
     }
     
     // x, y: canvas coords
@@ -45,26 +45,34 @@ class ChunkedBitmap {
         if(cy < 0) cy += sideInTiles
         
         // its common to set tile on each mouse event, so avoid unnesessary mutations
-        if(!chunk || chunk[cy*sideInTiles + cx] !== tile) {
+        if(!chunk || chunk.background[cy*sideInTiles + cx] !== tile) {
             // copy chunk binary data, state must be immutable
-            var editable = this.newChunk(chunk)
+            var editable = this.newArray(chunk)
             editable[cy*sideInTiles + cx] = tile
             
-            this.setChunk(x, y, editable)
+            this.applyChunk(x, y, editable)
         }
     }
     
-    // copy or create byte array which actually 8x8 bitmap (bytemap) of tiles
-    newChunk(from) {
+    // copy or create chunk
+    newChunk(background) {
+        return {
+            background: background,
+            nbitmap: new Uint8Array(sideInTiles*sideInTiles)
+        }
+    }
+    
+    // copy from chunk or create byte array which actually 8x8 bitmap (bytemap) of tiles
+    newArray(from) {
         var to = new Uint8Array(sideInTiles*sideInTiles);
-        if(from) { to.set(from) }
+        if(from) { to.set(from.background) }
         return to
     }
     
-    // set changed (or new) chunk into the state
+    // set changed (or new) background into the state
     // x, y: canvas coords
-    setChunk(x, y, chunk) {
-        chunk = chunk || this.newChunk()
+    applyChunk(x, y, background) {
+        var chunk = this.newChunk(background)
         this.state = this.state.set(ChunkedBitmap.encodeXY(x, y), chunk)
     }
     
@@ -74,7 +82,7 @@ class ChunkedBitmap {
         var sx = x0 < x1 ? 1 : -1;
         var sy = y0 < y1 ? 1 : -1;
         var err = dx + dy;
-
+        
         while (true) {
             if(x0 === x1 && y0 === y1) break;
             var e2 = 2 * err;
@@ -87,24 +95,6 @@ class ChunkedBitmap {
             }
             this.setTile(x0, y0, tile);
         }
-    }
-    
-    log() {
-        this.state.forEach((c, i) => {
-            var p = ChunkedBitmap.decodeXY(i)
-            process.stdout.write('[' + p.x + ', ' + p.y + ']:\n')
-            for(var cy = 0; cy < sideInTiles; cy++) {
-                for(var cx = 0; cx < sideInTiles; cx++) {
-                    var tile = c[cy*sideInTiles + cx]
-                    switch(tile) {
-                        case 0: process.stdout.write("#"); break;
-                        case 1: process.stdout.write("."); break;
-                        default: process.stdout.write("Ё"); break;
-                    }
-                }
-                process.stdout.write('\n')
-            }
-        })
     }
     
     /*
