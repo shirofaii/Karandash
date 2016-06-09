@@ -1,5 +1,5 @@
 {
-  "name": "skel",
+  "name": "karandash",
   "version": "1.0.0",
   "description": "",
   "main": "src/server.js",
@@ -7,12 +7,10 @@
   "dependencies": {
     "express": "^4.13.4",
     "immutable": "^3.8.1",
-    "lodash": "^4.7.0",
-    "pixi": "pixijs/pixi.js",
-    "react": "^15.0.2",
-    "react-addons-pure-render-mixin": "^15.1.0",
-    "react-dom": "^15.0.2",
-    "react-pixi": "^0.8.0",
+    "lodash": "^4.13.1",
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0",
+    "react-immutable-render-mixin": "^0.9.6",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2"
   },

@@ -1,8 +1,6 @@
 var React = require('react');
-var PureRenderMixin = require('react-addons-pure-render-mixin');
 var Redux = require('react-redux');
 import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
-
 
 var Chunk = React.createClass({
     propTypes: {
@@ -11,7 +9,6 @@ var Chunk = React.createClass({
         bitmap: React.PropTypes.object.isRequired,
         nbitmap: React.PropTypes.object.isRequired
     },
-    mixins: [PureRenderMixin],
     
     // x, y cords in chunk space
     drawWall: function(x, y, i) {

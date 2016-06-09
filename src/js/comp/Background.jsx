@@ -1,9 +1,9 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var PureRenderMixin = require('react-addons-pure-render-mixin');
 var Redux = require('react-redux');
 var Bitmap = require('../chunk.js')
 var Chunk = require('./Chunk.jsx')
+import immutableRenderMixin from 'react-immutable-render-mixin';
 import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
 
 /*
@@ -14,6 +14,7 @@ var Background = React.createClass({
     propTypes: {
         chunks: React.PropTypes.object.isRequired
     },
+    mixins: [immutableRenderMixin],
     
     chunks: function() {
         return this.props.chunks.map((chunk, code) => {
