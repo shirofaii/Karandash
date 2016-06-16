@@ -50,7 +50,7 @@ var MapCanvas = React.createClass({
                         <path d={"M0,0 L0,"+tileInPixels+" L"+tileInPixels+","+tileInPixels} stroke="gray" strokeWidth="1" fill="none" />
                 </pattern>
             </defs>
-            <Background chunks={this.props.canvas.chunks} defaultTile={this.props.canvas.defaultBackgroundTile} />
+            <Background chunks={this.props.canvas.chunks} defaultBackgroundTile={this.props.canvas.defaultBackgroundTile} />
             <Cursor ref='cursor' dispatch={this.props.dispatch} height={this.props.height} width={this.props.width} camera={this.props.camera} />
         </svg>
     }

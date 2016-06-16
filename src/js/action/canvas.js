@@ -5,7 +5,7 @@ var Canvas = imm.Record({
     pen: null,
     penPosition: null,
     isDrawing: false,
-    defaultBackgroundTile: 1,
+    defaultBackgroundTile: 0,
     chunks: imm.Map()
 })
 

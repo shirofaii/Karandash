@@ -15,11 +15,11 @@ var Background = React.createClass({
     },
     
     shouldComponentUpdate: function(nextProps) {
-        return this.props.chunk !== nextProps.chunk
+        return this.props.chunks !== nextProps.chunks
     },
     
     chunks: function() {
-        const bitmap = new Bitmap(this.props.chunks);
+        const bitmap = new Bitmap().on(this.props);
         return this.props.chunks.map((chunk, code) => {
             var p = Bitmap.decodeXY(code)
             return <Chunk x={p.x} y={p.y} chunk={chunk} bitmap={bitmap} key={code} />

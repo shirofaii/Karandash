@@ -10,10 +10,6 @@ import {sideInTiles} from './const.js'
 */
 
 class ChunkedBitmap {
-    construct(canvas) {
-        if(canvas) this.on(canvas)
-    }
-    
     on(canvas) {
         this.state = canvas.chunks
         this.defaultTile = canvas.defaultBackgroundTile
@@ -28,7 +24,7 @@ class ChunkedBitmap {
     // x, y: canvas coords
     getTile(x, y) {
         var chunk = this.chunkAt(x, y)
-        if(!chunk) return null
+        if(!chunk) return this.defaultTile
         
         var cx = x % sideInTiles
         var cy = y % sideInTiles
@@ -60,9 +56,11 @@ class ChunkedBitmap {
     
     // copy from chunk or create byte array which actually 8x8 bitmap (bytemap) of tiles
     newArray(from) {
-        var to = new Uint8Array(sideInTiles*sideInTiles);
-        if(from) { to.set(from) }
-        return to
+        if(from) {
+            return Uint8Array.from(from)
+        } else {
+            return new Uint8Array(sideInTiles*sideInTiles)
+        }
     }
     
     // set changed (or new) background into the state
