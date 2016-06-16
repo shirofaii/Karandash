@@ -10,6 +10,10 @@ import {sideInTiles} from './const.js'
 */
 
 class ChunkedBitmap {
+    construct(canvas) {
+        if(canvas) this.on(canvas)
+    }
+    
     on(canvas) {
         this.state = canvas.chunks
         this.defaultTile = canvas.defaultBackgroundTile
@@ -31,7 +35,7 @@ class ChunkedBitmap {
         if(cx < 0) cx += sideInTiles
         if(cy < 0) cy += sideInTiles
         
-        return chunk.background[cy*sideInTiles + cx]
+        return chunk[cy*sideInTiles + cx]
     }
     
     // x, y: canvas coords
@@ -45,7 +49,7 @@ class ChunkedBitmap {
         if(cy < 0) cy += sideInTiles
         
         // its common to set tile on each mouse event, so avoid unnesessary mutations
-        if(!chunk || chunk.background[cy*sideInTiles + cx] !== tile) {
+        if(!chunk || chunk[cy*sideInTiles + cx] !== tile) {
             // copy chunk binary data, state must be immutable
             var editable = this.newArray(chunk)
             editable[cy*sideInTiles + cx] = tile
@@ -54,26 +58,17 @@ class ChunkedBitmap {
         }
     }
     
-    // copy or create chunk
-    newChunk(background) {
-        return {
-            background: background,
-            nbitmap: new Uint8Array(sideInTiles*sideInTiles)
-        }
-    }
-    
     // copy from chunk or create byte array which actually 8x8 bitmap (bytemap) of tiles
     newArray(from) {
         var to = new Uint8Array(sideInTiles*sideInTiles);
-        if(from) { to.set(from.background) }
+        if(from) { to.set(from) }
         return to
     }
     
     // set changed (or new) background into the state
     // x, y: canvas coords
-    applyChunk(x, y, background) {
-        var chunk = this.newChunk(background)
-        this.state = this.state.set(ChunkedBitmap.encodeXY(x, y), chunk)
+    applyChunk(x, y, bitmap) {  
+        this.state = this.state.set(ChunkedBitmap.encodeXY(x, y), bitmap)
     }
     
     line(x0, y0, x1, y1, tile) {
