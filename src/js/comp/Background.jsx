@@ -22,7 +22,7 @@ var Background = React.createClass({
         const bitmap = new Bitmap().on(this.props);
         return this.props.chunks.map((chunk, code) => {
             var p = Bitmap.decodeXY(code)
-            return <Chunk x={p.x} y={p.y} chunk={chunk} bitmap={bitmap} key={code} />
+            return <Chunk x={p.x} y={p.y} bitmap={bitmap} key={code} />
         }).toArray()
     },
     
