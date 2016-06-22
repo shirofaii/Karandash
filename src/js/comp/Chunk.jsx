@@ -14,7 +14,8 @@ var Chunk = React.createClass({
     },
     
     shouldComponentUpdate: function(nextProps) {
-        return this.props.chunk !== nextProps.chunk
+        //TODO: think about optimize this
+        return this.props.bitmap.state !== nextProps.bitmap.state
     },
     
     // x, y cords in chunk space
@@ -52,14 +53,12 @@ var Chunk = React.createClass({
     },
     drawLines: function() {
         var plotter = new Plotter(this.props)
-        return plotter.debugPolygons()
+        return plotter.svg()
     },
     
     render: function() {
         return <svg x={this.props.x * sideInPixels} y={this.props.y * sideInPixels} width={sideInPixels} height={sideInPixels}>
-            {this.drawChunk()}
             {this.drawLines()}
-            {this.drawCorners()}
             <rect x="0" y="0" width={sideInPixels} height={sideInPixels} fill="url(#gridPattern)" />
         </svg>
     }
