@@ -16,7 +16,6 @@ var MapCanvas = React.createClass({
         height: React.PropTypes.number.isRequired
     },
     
-    
     viewBox: function() {
         return _.join([
             this.props.camera.get('x') - Math.floor(this.props.width * 0.5),
@@ -26,13 +25,10 @@ var MapCanvas = React.createClass({
         ], ' ')
     },
     
-    // delegate all input to Cursor
+    // mouse down happens only on canvas, but
+    // mouse up, move and keyboard events can be everywhere
+    // all canvas related events handled by Cursor component
     onMouseDown: function(e) {this.refs.cursor.onMouseDown(e)},
-    onMouseUp: function(e) {this.refs.cursor.onMouseUp(e)},
-    onMouseEnter: function(e) {this.refs.cursor.onMouseEnter(e)},
-    onMouseLeave: function(e) {this.refs.cursor.onMouseLeave(e)},
-    onMouseMove: function(e) {this.refs.cursor.onMouseMove(e)},
-    
     render: function() {
         return <svg
                 className='canvas'
@@ -40,10 +36,6 @@ var MapCanvas = React.createClass({
                 width={this.props.width}
                 height={this.props.height}
                 onMouseDown={this.onMouseDown}
-                onMouseUp={this.onMouseUp}
-                onMouseEnter={this.onMouseEnter}
-                onMouseLeave={this.onMouseLeave}
-                onMouseMove={this.onMouseMove}
                 >
             <defs>
                 <pattern id="gridPattern" width={tileInPixels} height={tileInPixels} patternUnits="userSpaceOnUse">

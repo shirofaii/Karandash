@@ -15,24 +15,24 @@ import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
 */
 
 var Cursor = React.createClass({
+    // delegated from MapCanvas component
     onMouseDown: function(e) {
         this.mouseX = e.clientX
         this.mouseY = e.clientY
-        if(this.spacePressed) {
+        this.startCapture()
+        if(e.button === 1) {
             this.startMoving()
         } else {
             this.startDrawing()
         }
     },
     onMouseUp: function(e) {
+        this.releaseCapture()
         this.stopDrawing()
         this.stopMoving()
         this.mouseX = null
         this.mouseY = null
     },
-    onMouseEnter: function(e) {},
-    onMouseLeave: function(e) { this.reset() },
-    onBlur: function(e) { this.reset() },
     onMouseMove: function(e) {
         this.moving(e)
         this.drawing(e)
@@ -40,15 +40,8 @@ var Cursor = React.createClass({
         this.mouseY = e.clientY
     },
     onKeyDown: function(e) {
-        if(e.code === 'Space') {
-            this.spacePressed = true
-        }
     },
     onKeyUp: function(e) {
-        if(e.code === 'Space') {
-            this.spacePressed = false
-            this.stopMoving()
-        }
     },
     
     startMoving: function() {
@@ -93,24 +86,23 @@ var Cursor = React.createClass({
         return m
     },
     
-    reset: function() {
-        this.mouseX = null
-        this.mouseY = null
-        this.spacePressed = false
-        this.stopMoving()
-        this.stopDrawing()
+    startCapture: function() {
+        window.addEventListener('mouseup', this.onMouseUp);
+        window.addEventListener('mousemove', this.onMouseMove);
+    },
+    releaseCapture: function() {
+        window.removeEventListener('mouseup', this.onMouseUp);
+        window.removeEventListener('mousemove', this.onMouseMove);
     },
     
     componentDidMount: function() {
         document.addEventListener('keydown', this.onKeyDown);
         document.addEventListener('keyup', this.onKeyUp);
-        window.addEventListener('blur', this.onBlur);
     },
     
     componentWillUnmount: function() {
         document.removeEventListener('keydown', this.onKeyDown);
         document.removeEventListener('keyup', this.onKeyUp);
-        window.removeEventListener('blur', this.onBlur);
     },
     
     render: function() {
