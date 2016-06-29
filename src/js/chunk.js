@@ -1,5 +1,5 @@
 var imm = require('immutable');
-import {sideInTiles} from './const.js'
+import {sideInTiles, tileInPixels, sideInPixels} from './const.js'
 
 /* chunked bitmap
     all bitmap splitted to NxN chunks, and only edited chunks saved in state as pairs of <coord, chunk>
@@ -13,19 +13,21 @@ class ChunkedBitmap {
     on(canvas) {
         this.state = canvas.chunks
         this.defaultTile = canvas.defaultBackgroundTile
+        this.defaultChunk = this.newChunk()
         return this
     }
     
     // x, y: canvas coords
     chunkAt(x, y) {
-        return this.state.get(ChunkedBitmap.encodeXY(x, y))
+        var result = this.state.get(ChunkedBitmap.encodeXY(x, y))
+        if(!result) return this.defaultChunk
+        
+        return result
     }
     
     // x, y: canvas coords
     getTile(x, y) {
         var chunk = this.chunkAt(x, y)
-        if(!chunk) return this.defaultTile
-        
         var cx = x % sideInTiles
         var cy = y % sideInTiles
         if(cx < 0) cx += sideInTiles
@@ -59,8 +61,14 @@ class ChunkedBitmap {
         if(from) {
             return Uint8Array.from(from)
         } else {
-            return new Uint8Array(sideInTiles*sideInTiles)
+            return this.newChunk()
         }
+    }
+    
+    newChunk() {
+        var result = new Uint8Array(sideInTiles*sideInTiles)
+        result.fill(this.defaultTile)
+        return result
     }
     
     // set changed (or new) background into the state
@@ -95,6 +103,7 @@ class ChunkedBitmap {
         Used as hash for chunks map
         [<unused bit><x: 15 bits><y: 15 bits>]
         x and y should be in range -16383 16384
+        NB: x, y in canvas coords, but encoded value in chunks space
     */
     static encodeXY(x, y) {
         return ((Math.floor(x / sideInTiles) + 16383) << 15) + Math.floor(y / sideInTiles) + 16383
@@ -102,6 +111,15 @@ class ChunkedBitmap {
     
     static decodeXY(i) {
         return {x: (i >>> 15) - 16383, y: (i & 0x00007fff) - 16383}
+    }
+    
+    /*
+        in: coords in pixels
+        out: point with tile coords
+    */
+    //TODO do something with the coord spaces, point class and vector geometry
+    static getChunkCoordsForPoint(x, y) {
+        return {x: Math.floor(x / sideInPixels), y: Math.floor(y / sideInPixels)}
     }
 }
 

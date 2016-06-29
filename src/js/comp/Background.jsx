@@ -11,19 +11,26 @@ import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
 
 var Background = React.createClass({
     propTypes: {
-        chunks: React.PropTypes.object.isRequired
+        chunks: React.PropTypes.object.isRequired,
+        clipBy: React.PropTypes.object.isRequired
     },
     
     shouldComponentUpdate: function(nextProps) {
-        return this.props.chunks !== nextProps.chunks
+        return  this.props.chunks !== nextProps.chunks || 
+                this.props.clipBy.x1 !== nextProps.clipBy.x1 ||
+                this.props.clipBy.y1 !== nextProps.clipBy.y1
     },
     
     chunks: function() {
         const bitmap = new Bitmap().on(this.props);
-        return this.props.chunks.map((chunk, code) => {
-            var p = Bitmap.decodeXY(code)
-            return <Chunk x={p.x} y={p.y} bitmap={bitmap} key={code} />
-        }).toArray()
+        var result = []
+        for(var x = this.props.clipBy.x1; x <= this.props.clipBy.x2 + sideInPixels; x += sideInPixels) {
+            for(var y = this.props.clipBy.y1; y <= this.props.clipBy.y2 + sideInPixels; y += sideInPixels) {
+                var p = Bitmap.getChunkCoordsForPoint(x, y)
+                result.push(<Chunk x={p.x} y={p.y} bitmap={bitmap} key={p.x + ',' + p.y} />)
+            }
+        }
+        return result
     },
     
     render: function() {

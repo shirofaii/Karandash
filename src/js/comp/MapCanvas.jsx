@@ -25,10 +25,20 @@ var MapCanvas = React.createClass({
         ], ' ')
     },
     
+    clipBy: function() {
+        return {
+            x1: this.props.camera.get('x') - Math.floor(this.props.width * 0.5),
+            y1: this.props.camera.get('y') - Math.floor(this.props.height * 0.5),
+            x2: this.props.camera.get('x') + Math.floor(this.props.width * 0.5),
+            y2: this.props.camera.get('y') + Math.floor(this.props.height * 0.5)
+        }
+    },
+    
     // mouse down happens only on canvas, but
     // mouse up, move and keyboard events can be everywhere
-    // all canvas related events handled by Cursor component
+    // all events handled by Cursor component
     onMouseDown: function(e) {this.refs.cursor.onMouseDown(e)},
+    
     render: function() {
         return <svg
                 className='canvas'
@@ -39,13 +49,13 @@ var MapCanvas = React.createClass({
                 >
             <defs>
                 <pattern id="gridPattern" width={tileInPixels} height={tileInPixels} patternUnits="userSpaceOnUse">
-                        <path d={"M0,0 L0,"+tileInPixels+" L"+tileInPixels+","+tileInPixels} stroke="gray" strokeWidth="1" fill="none" />
+                    <path d={"M0,0 L0,"+tileInPixels+" L"+tileInPixels+","+tileInPixels} stroke="gray" strokeWidth="1" fill="none" />
                 </pattern>
                 <pattern id="wallPattern" width="12" height="12 " patternUnits="userSpaceOnUse">
                     <path d="M0,12L12,0" stroke='black' stroke-width='1' />
                 </pattern>
             </defs>
-            <Background chunks={this.props.canvas.chunks} defaultBackgroundTile={this.props.canvas.defaultBackgroundTile} />
+            <Background chunks={this.props.canvas.chunks} clipBy={this.clipBy()} />
             <Cursor ref='cursor' dispatch={this.props.dispatch} height={this.props.height} width={this.props.width} camera={this.props.camera} />
         </svg>
     }
