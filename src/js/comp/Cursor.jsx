@@ -4,6 +4,8 @@ var Redux = require('react-redux');
 var camera = require('../action/camera.js')
 var canvas = require('../action/canvas.js')
 
+var ChunkedBitmap = require('../chunk.js')
+
 import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
 
 /*
@@ -14,30 +16,43 @@ import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
     * change cursor appearance
 */
 
+/*
+    idle:
+        predraw cursor (wall/space)
+    camera move (middle button pressed):
+        move camera
+    drawing (first button pressed):
+        drawing cursor (wall/space tile)
+    drawing (first button and shift pressed):
+        drawing cursor (wall/space rect)
+    
+    placing cursor (object)
+    erasing cursor (tile/rect)
+*/
+
 var Cursor = React.createClass({
     // delegated from MapCanvas component
     onMouseDown: function(e) {
         this.mouseX = e.clientX
         this.mouseY = e.clientY
-        this.startCapture()
         if(e.button === 1) {
             this.startMoving()
         } else {
             this.startDrawing()
         }
+        this.forceUpdate()
     },
     onMouseUp: function(e) {
-        this.releaseCapture()
         this.stopDrawing()
         this.stopMoving()
-        this.mouseX = null
-        this.mouseY = null
+        this.forceUpdate()
     },
     onMouseMove: function(e) {
         this.moving(e)
         this.drawing(e)
         this.mouseX = e.clientX
         this.mouseY = e.clientY
+        this.forceUpdate()
     },
     onKeyDown: function(e) {
     },
@@ -62,13 +77,14 @@ var Cursor = React.createClass({
     
     startDrawing: function() {
         this.isDrawing = true
-        this.props.dispatch(canvas.action.setPen(1))
-        var p = this.mouseToTile({x: this.mouseX, y: this.mouseY})
+        var p = this.mouseToTile(this.mousePosition())
+        this.drawingTile = this.getTile(p.x, p.y) === 1 ? 0 : 1
+        this.props.dispatch(canvas.action.setPen(this.drawingTile))
         this.props.dispatch(canvas.action.drawBegin(p.x, p.y))
     },
     drawing: function(e) {
         if(this.isDrawing) {
-            var f = this.mouseToTile({x: this.mouseX, y: this.mouseY})
+            var f = this.mouseToTile(this.mousePosition())
             var t = this.mouseToTile({x: e.clientX, y: e.clientY})
             this.props.dispatch(canvas.action.lineTo(f.x, f.y, t.x, t.y))
         }
@@ -78,6 +94,7 @@ var Cursor = React.createClass({
         
         this.props.dispatch(canvas.action.drawEnd())
         this.isDrawing = false
+        this.drawingTile = null
     },
     
     mouseToTile: function(m) {
@@ -86,27 +103,49 @@ var Cursor = React.createClass({
         return m
     },
     
-    startCapture: function() {
-        window.addEventListener('mouseup', this.onMouseUp);
-        window.addEventListener('mousemove', this.onMouseMove);
+    mousePosition: function() {
+        return {x: this.mouseX, y: this.mouseY}
     },
-    releaseCapture: function() {
-        window.removeEventListener('mouseup', this.onMouseUp);
-        window.removeEventListener('mousemove', this.onMouseMove);
+    
+    getTile: function(x, y) {
+        if(!this.bitmap) {
+            this.bitmap = new ChunkedBitmap(this.props.canvas)
+        }
+        this.bitmap.on(this.props.canvas)
+        return this.bitmap.getTile(x, y)
     },
     
     componentDidMount: function() {
         document.addEventListener('keydown', this.onKeyDown);
         document.addEventListener('keyup', this.onKeyUp);
+        window.addEventListener('mouseup', this.onMouseUp);
+        window.addEventListener('mousemove', this.onMouseMove);
     },
     
     componentWillUnmount: function() {
         document.removeEventListener('keydown', this.onKeyDown);
         document.removeEventListener('keyup', this.onKeyUp);
+        window.removeEventListener('mouseup', this.onMouseUp);
+        window.removeEventListener('mousemove', this.onMouseMove);
+    },
+    
+    renderPreDrawing: function() {
+        var tile = this.mouseToTile(this.mousePosition())
+        var wall = this.getTile(tile.x, tile.y) === 1
+        var fill = wall ? 'url(#wallPattern' : 'white'
+        return <rect x={tile.x * tileInPixels} y={tile.y * tileInPixels} width={tileInPixels} height={tileInPixels} fill={fill} />
+    },
+    
+    renderDrawing: function() {
+        var tile = this.mouseToTile(this.mousePosition())
+        var stroke = this.drawingTile ? 'white' : 'black'
+        return <rect x={tile.x * tileInPixels} y={tile.y * tileInPixels} width={tileInPixels} height={tileInPixels} fill='none' stroke={stroke} />
     },
     
     render: function() {
-        return null
+        if(this.isMoving) return null;
+        if(this.isDrawing) return this.renderDrawing()
+        return this.renderPreDrawing()
     }
 });
 

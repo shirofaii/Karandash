@@ -34,11 +34,8 @@ var MapCanvas = React.createClass({
         }
     },
     
-    // mouse down happens only on canvas, but
-    // mouse up, move and keyboard events can be everywhere
     // all events handled by Cursor component
     onMouseDown: function(e) {this.refs.cursor.onMouseDown(e)},
-    
     render: function() {
         return <svg
                 className='canvas'
@@ -55,8 +52,8 @@ var MapCanvas = React.createClass({
                     <path d="M0,12L12,0" stroke='black' stroke-width='1' />
                 </pattern>
             </defs>
-            <Background chunks={this.props.canvas.chunks} clipBy={this.clipBy()} />
-            <Cursor ref='cursor' dispatch={this.props.dispatch} height={this.props.height} width={this.props.width} camera={this.props.camera} />
+            <Background canvas={this.props.canvas} clipBy={this.clipBy()} />
+            <Cursor ref='cursor' dispatch={this.props.dispatch} height={this.props.height} width={this.props.width} camera={this.props.camera} canvas={this.props.canvas} />
         </svg>
     }
 });

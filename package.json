@@ -1,6 +1,6 @@
 {
   "name": "karandash",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "src/server.js",
   "repository": "http://github.com/",
@@ -10,7 +10,6 @@
     "lodash": "^4.13.1",
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
-    "react-immutable-render-mixin": "^0.9.6",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2"
   },
