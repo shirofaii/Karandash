@@ -35,7 +35,7 @@
     "watchify": "^3.7.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cd ./src/js && mocha --compilers js:babel-core/register",
     "build": "gulp",
     "start": "cd ./src && node server.js"
   },
