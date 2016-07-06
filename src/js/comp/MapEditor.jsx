@@ -1,5 +1,6 @@
 var React = require('react');
 var Redux = require('react-redux');
+var imm = require('immutable');
 
 var MapCanvas = require('./MapCanvas.jsx')
 
@@ -9,9 +10,9 @@ var MapEditor = React.createClass({
         isLoading: React.PropTypes.bool.isRequired,
         isSaving: React.PropTypes.bool.isRequired,
         url: React.PropTypes.string.isRequired,
-        errors: React.PropTypes.object.isRequired, // imm.List(string)
-        canvas: React.PropTypes.object.isRequired,
-        camera: React.PropTypes.object.isRequired
+        errors: React.PropTypes.instanceOf(imm.List).isRequired,    // imm.List(string)
+        canvas: React.PropTypes.instanceOf(imm.Record).isRequired,  // see canvas.js
+        camera: React.PropTypes.instanceOf(imm.Record).isRequired   // see camera.js
     },
     
     getInitialState: function() {

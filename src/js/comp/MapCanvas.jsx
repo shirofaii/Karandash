@@ -1,8 +1,9 @@
 var React = require('react');
-var Redux = require('react-redux');
-//var px = require('react-pixi')
+var Redux = require('react-redux')
+var imm = require('immutable')
+
 var Chunk = require('./Chunk.jsx')
-var Bitmap = require('../chunk.js')
+var ChunkedBitmap = require('../chunk.js')
 var _ = require('lodash')
 var Cursor = require('./Cursor.jsx')
 var Background = require('./Background.jsx')
@@ -10,8 +11,8 @@ import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
 
 var MapCanvas = React.createClass({
     propTypes: {
-        canvas: React.PropTypes.object.isRequired,
-        camera: React.PropTypes.object.isRequired,
+        canvas: React.PropTypes.instanceOf(imm.Record).isRequired,  // see canvas.js
+        camera: React.PropTypes.instanceOf(imm.Record).isRequired,   // see camera.js
         width: React.PropTypes.number.isRequired,
         height: React.PropTypes.number.isRequired
     },
@@ -37,6 +38,7 @@ var MapCanvas = React.createClass({
     // all events handled by Cursor component
     onMouseDown: function(e) {this.refs.cursor.onMouseDown(e)},
     render: function() {
+        var bitmap = new ChunkedBitmap().on(this.props.canvas)
         return <svg
                 className='canvas'
                 viewBox={this.viewBox()}
@@ -52,8 +54,8 @@ var MapCanvas = React.createClass({
                     <path d="M0,12L12,0" stroke='black' stroke-width='1' />
                 </pattern>
             </defs>
-            <Background canvas={this.props.canvas} clipBy={this.clipBy()} />
-            <Cursor ref='cursor' dispatch={this.props.dispatch} height={this.props.height} width={this.props.width} camera={this.props.camera} canvas={this.props.canvas} />
+            <Background bitmap={bitmap} clipBy={this.clipBy()} />
+            <Cursor ref='cursor' dispatch={this.props.dispatch} height={this.props.height} width={this.props.width} camera={this.props.camera} bitmap={bitmap} />
         </svg>
     }
 });

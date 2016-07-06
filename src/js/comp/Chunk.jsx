@@ -1,6 +1,8 @@
 var React = require('react');
 var Redux = require('react-redux');
 var _ = require('lodash');
+var ChunkedBitmap = require('../chunk.js')
+
 import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
 import {Plotter} from '../plotter.js'
 
@@ -9,7 +11,7 @@ var Chunk = React.createClass({
     propTypes: {
         x: React.PropTypes.number.isRequired,
         y: React.PropTypes.number.isRequired,
-        bitmap: React.PropTypes.object.isRequired
+        bitmap: React.PropTypes.instanceOf(ChunkedBitmap).isRequired
     },
     
     shouldComponentUpdate: function(nextProps) {

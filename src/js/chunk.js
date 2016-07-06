@@ -118,7 +118,6 @@ class ChunkedBitmap {
         in: coords in pixels
         out: point with tile coords
     */
-    //TODO do something with the coord spaces, point class and vector geometry
     static getChunkCoordsForPoint(x, y) {
         return {x: Math.floor(x / sideInPixels), y: Math.floor(y / sideInPixels)}
     }

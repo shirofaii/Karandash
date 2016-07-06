@@ -1,5 +1,6 @@
 var React = require('react');
 var Redux = require('react-redux');
+var imm = require('immutable')
 
 var camera = require('../action/camera.js')
 var canvas = require('../action/canvas.js')
@@ -31,6 +32,14 @@ import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
 */
 
 var Cursor = React.createClass({
+    propTypes: {
+        height: React.PropTypes.number.isRequired,
+        width: React.PropTypes.number.isRequired,
+        bitmap: React.PropTypes.instanceOf(ChunkedBitmap).isRequired,
+        camera: React.PropTypes.instanceOf(imm.Record).isRequired,   // see camera.js
+        dispatch: React.PropTypes.func.isRequired
+    },
+    
     // delegated from MapCanvas component
     onMouseDown: function(e) {
         this.mouseX = e.clientX
@@ -59,6 +68,57 @@ var Cursor = React.createClass({
     onKeyUp: function(e) {
     },
     
+    mouseToTile: function(m) {
+        m.x = Math.floor((this.props.camera.x - this.props.width / 2 + m.x) / tileInPixels)
+        m.y = Math.floor((this.props.camera.y - this.props.height / 2 + m.y) / tileInPixels)
+        return m
+    },
+    
+    mousePosition: function() {
+        return {x: this.mouseX, y: this.mouseY}
+    },
+    
+    getTile: function(x, y) {
+        return this.props.bitmap.getTile(x, y)
+    },
+    
+    componentDidMount: function() {
+        document.addEventListener('keydown', this.onKeyDown);
+        document.addEventListener('keyup', this.onKeyUp);
+        window.addEventListener('mouseup', this.onMouseUp);
+        window.addEventListener('mousemove', this.onMouseMove);
+    },
+    
+    componentWillUnmount: function() {
+        document.removeEventListener('keydown', this.onKeyDown);
+        document.removeEventListener('keyup', this.onKeyUp);
+        window.removeEventListener('mouseup', this.onMouseUp);
+        window.removeEventListener('mousemove', this.onMouseMove);
+    },
+    
+    renderPreDrawing: function() {
+        if(this.mouseX === undefined) return null
+        
+        var tile = this.mouseToTile(this.mousePosition())
+        var wall = this.getTile(tile.x, tile.y) === 1
+        var fill = wall ? 'url(#wallPattern' : 'white'
+
+        return <rect x={tile.x * tileInPixels} y={tile.y * tileInPixels} width={tileInPixels} height={tileInPixels} fill={fill} />
+    },
+    
+    renderDrawing: function() {
+        var tile = this.mouseToTile(this.mousePosition())
+        var stroke = this.drawingTile ? 'white' : 'black'
+        return <rect x={tile.x * tileInPixels} y={tile.y * tileInPixels} width={tileInPixels} height={tileInPixels} fill='none' stroke={stroke} />
+    },
+    
+    render: function() {
+        if(this.isMoving) return null
+        if(this.isDrawing) return this.renderDrawing()
+        return this.renderPreDrawing()
+    },
+    
+    // camera moving
     startMoving: function() {
         this.isMoving = true
     },
@@ -75,6 +135,7 @@ var Cursor = React.createClass({
         this.isMoving = false
     },
     
+    // wall/space drawing
     startDrawing: function() {
         this.isDrawing = true
         var p = this.mouseToTile(this.mousePosition())
@@ -96,57 +157,7 @@ var Cursor = React.createClass({
         this.isDrawing = false
         this.drawingTile = null
     },
-    
-    mouseToTile: function(m) {
-        m.x = Math.floor((this.props.camera.x - this.props.width / 2 + m.x) / tileInPixels)
-        m.y = Math.floor((this.props.camera.y - this.props.height / 2 + m.y) / tileInPixels)
-        return m
-    },
-    
-    mousePosition: function() {
-        return {x: this.mouseX, y: this.mouseY}
-    },
-    
-    getTile: function(x, y) {
-        if(!this.bitmap) {
-            this.bitmap = new ChunkedBitmap(this.props.canvas)
-        }
-        this.bitmap.on(this.props.canvas)
-        return this.bitmap.getTile(x, y)
-    },
-    
-    componentDidMount: function() {
-        document.addEventListener('keydown', this.onKeyDown);
-        document.addEventListener('keyup', this.onKeyUp);
-        window.addEventListener('mouseup', this.onMouseUp);
-        window.addEventListener('mousemove', this.onMouseMove);
-    },
-    
-    componentWillUnmount: function() {
-        document.removeEventListener('keydown', this.onKeyDown);
-        document.removeEventListener('keyup', this.onKeyUp);
-        window.removeEventListener('mouseup', this.onMouseUp);
-        window.removeEventListener('mousemove', this.onMouseMove);
-    },
-    
-    renderPreDrawing: function() {
-        var tile = this.mouseToTile(this.mousePosition())
-        var wall = this.getTile(tile.x, tile.y) === 1
-        var fill = wall ? 'url(#wallPattern' : 'white'
-        return <rect x={tile.x * tileInPixels} y={tile.y * tileInPixels} width={tileInPixels} height={tileInPixels} fill={fill} />
-    },
-    
-    renderDrawing: function() {
-        var tile = this.mouseToTile(this.mousePosition())
-        var stroke = this.drawingTile ? 'white' : 'black'
-        return <rect x={tile.x * tileInPixels} y={tile.y * tileInPixels} width={tileInPixels} height={tileInPixels} fill='none' stroke={stroke} />
-    },
-    
-    render: function() {
-        if(this.isMoving) return null;
-        if(this.isDrawing) return this.renderDrawing()
-        return this.renderPreDrawing()
-    }
+
 });
 
 module.exports = Cursor;
