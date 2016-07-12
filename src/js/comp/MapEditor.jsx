@@ -1,8 +1,8 @@
 var React = require('react');
 var Redux = require('react-redux');
 var imm = require('immutable');
-
 var MapCanvas = require('./MapCanvas.jsx')
+var Toolbox = require('./Toolbox.jsx')
 
 var MapEditor = React.createClass({
     propTypes: {
@@ -39,7 +39,7 @@ var MapEditor = React.createClass({
     
     render: function() {
         return <div>
-            <h1>{this.props.title}</h1>
+            <Toolbox />
             <MapCanvas canvas={this.props.canvas} camera={this.props.camera} width={this.state.windowWidth} height={this.state.windowHeight} />
         </div>
     }
