@@ -51,7 +51,7 @@ var MapCanvas = React.createClass({
                     <path d={"M0,0 L0,"+tileInPixels+" L"+tileInPixels+","+tileInPixels} stroke="gray" strokeWidth="1" fill="none" />
                 </pattern>
                 <pattern id="wallPattern" width="12" height="12 " patternUnits="userSpaceOnUse">
-                    <path d="M0,12L12,0" stroke='black' stroke-width='1' />
+                    <path d="M0,12L12,0" stroke='black' strokeWidth='1' />
                 </pattern>
             </defs>
             <Background bitmap={bitmap} clipBy={this.clipBy()} />

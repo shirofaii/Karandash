@@ -152,7 +152,7 @@ class Polygon {
         for(var i = 1; i < lines.length; i++) {
             path += this.reversedPath(lines[i])
         }
-        return <path d={path} fill='url(#wallPattern)' stroke='black' stroke-width='1' key={outer[0].x + ':' + outer[0].y} />
+        return <path d={path} fill='url(#wallPattern)' stroke='black' strokeWidth='1' key={outer[0].x + ':' + outer[0].y} />
     }
 }
 
