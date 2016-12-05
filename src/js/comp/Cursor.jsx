@@ -26,7 +26,7 @@ import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
         drawing cursor (wall/space tile)
     drawing (first button and shift pressed):
         drawing cursor (wall/space rect)
-    
+
     placing cursor (object)
     erasing cursor (tile/rect)
 */
@@ -39,7 +39,7 @@ var Cursor = React.createClass({
         camera: React.PropTypes.instanceOf(imm.Record).isRequired,   // see camera.js
         dispatch: React.PropTypes.func.isRequired
     },
-    
+
     // delegated from MapCanvas component
     onMouseDown: function(e) {
         this.mouseX = e.clientX
@@ -67,57 +67,46 @@ var Cursor = React.createClass({
     },
     onKeyUp: function(e) {
     },
-    
+
     mouseToTile: function(m) {
         m.x = Math.floor((this.props.camera.x - this.props.width / 2 + m.x) / tileInPixels)
         m.y = Math.floor((this.props.camera.y - this.props.height / 2 + m.y) / tileInPixels)
         return m
     },
-    
+
     mousePosition: function() {
         return {x: this.mouseX, y: this.mouseY}
     },
-    
+
     getTile: function(x, y) {
         return this.props.bitmap.getTile(x, y)
     },
-    
+
     componentDidMount: function() {
         document.addEventListener('keydown', this.onKeyDown);
         document.addEventListener('keyup', this.onKeyUp);
         window.addEventListener('mouseup', this.onMouseUp);
         window.addEventListener('mousemove', this.onMouseMove);
     },
-    
+
     componentWillUnmount: function() {
         document.removeEventListener('keydown', this.onKeyDown);
         document.removeEventListener('keyup', this.onKeyUp);
         window.removeEventListener('mouseup', this.onMouseUp);
         window.removeEventListener('mousemove', this.onMouseMove);
     },
-    
-    renderPreDrawing: function() {
-        if(this.mouseX === undefined) return null
-        
-        var tile = this.mouseToTile(this.mousePosition())
-        var wall = this.getTile(tile.x, tile.y) === 1
-        var fill = wall ? 'url(#wallPattern' : 'white'
 
-        return <rect x={tile.x * tileInPixels} y={tile.y * tileInPixels} width={tileInPixels} height={tileInPixels} fill={fill} />
-    },
-    
     renderDrawing: function() {
+        if(this.mouseX === undefined) return null
         var tile = this.mouseToTile(this.mousePosition())
-        var stroke = this.drawingTile ? 'white' : 'black'
-        return <rect x={tile.x * tileInPixels} y={tile.y * tileInPixels} width={tileInPixels} height={tileInPixels} fill='none' stroke={stroke} />
+        return <rect x={tile.x * tileInPixels} y={tile.y * tileInPixels} width={tileInPixels} height={tileInPixels} fill='none' stroke='gray' />
     },
-    
+
     render: function() {
         if(this.isMoving) return null
-        if(this.isDrawing) return this.renderDrawing()
-        return this.renderPreDrawing()
+        return this.renderDrawing()
     },
-    
+
     // camera moving
     startMoving: function() {
         this.isMoving = true
@@ -131,10 +120,10 @@ var Cursor = React.createClass({
     },
     stopMoving: function() {
         if(!this.isMoving) return
-        
+
         this.isMoving = false
     },
-    
+
     // wall/space drawing
     startDrawing: function() {
         this.isDrawing = true
@@ -152,7 +141,7 @@ var Cursor = React.createClass({
     },
     stopDrawing: function() {
         if(!this.isDrawing) return
-        
+
         this.props.dispatch(canvas.action.drawEnd())
         this.isDrawing = false
         this.drawingTile = null

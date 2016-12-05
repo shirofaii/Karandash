@@ -14,29 +14,29 @@ var MapEditor = React.createClass({
         canvas: React.PropTypes.instanceOf(imm.Record).isRequired,  // see canvas.js
         camera: React.PropTypes.instanceOf(imm.Record).isRequired   // see camera.js
     },
-    
+
     getInitialState: function() {
         return {
             windowWidth: window.innerWidth,
             windowHeight: window.innerHeight
         };
     },
-    
+
     handleResize: function(e) {
         this.setState({
             windowWidth: window.innerWidth,
             windowHeight: window.innerHeight
         });
     },
-    
+
     componentDidMount: function() {
         window.addEventListener('resize', this.handleResize);
     },
-    
+
     componentWillUnmount: function() {
         window.removeEventListener('resize', this.handleResize);
     },
-    
+
     render: function() {
         return <div>
             <Toolbox />

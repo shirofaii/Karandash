@@ -6,7 +6,7 @@ const app = new Express();
 app.use(compression());
 app.use('/', Express.static('wwwroot'));
 
-var port = process.env.PORT || 1234;
+var port = process.env.PORT || 80;
 
 app.listen(port, function() {
     console.log('==> Server listened on port ', port);

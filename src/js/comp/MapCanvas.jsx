@@ -16,7 +16,7 @@ var MapCanvas = React.createClass({
         width: React.PropTypes.number.isRequired,
         height: React.PropTypes.number.isRequired
     },
-    
+
     viewBox: function() {
         return _.join([
             this.props.camera.get('x') - Math.floor(this.props.width * 0.5),
@@ -25,7 +25,7 @@ var MapCanvas = React.createClass({
             this.props.height
         ], ' ')
     },
-    
+
     clipBy: function() {
         return {
             x1: this.props.camera.get('x') - Math.floor(this.props.width * 0.5),
@@ -34,7 +34,7 @@ var MapCanvas = React.createClass({
             y2: this.props.camera.get('y') + Math.floor(this.props.height * 0.5)
         }
     },
-    
+
     // all events handled by Cursor component
     onMouseDown: function(e) {this.refs.cursor.onMouseDown(e)},
     render: function() {
@@ -48,10 +48,10 @@ var MapCanvas = React.createClass({
                 >
             <defs>
                 <pattern id="gridPattern" width={tileInPixels} height={tileInPixels} patternUnits="userSpaceOnUse">
-                    <path d={"M0,0 L0,"+tileInPixels+" L"+tileInPixels+","+tileInPixels} stroke="gray" strokeWidth="1" fill="none" />
+                    <path d={"M0,0 L0,"+tileInPixels+" L"+tileInPixels+","+tileInPixels} stroke="gray" strokeOpacity="0.5" strokeWidth="1" fill="none" />
                 </pattern>
-                <pattern id="wallPattern" width="12" height="12 " patternUnits="userSpaceOnUse">
-                    <path d="M0,12L12,0" stroke='black' strokeWidth='1' />
+                <pattern id="wallPattern" width="4" height="4" patternUnits="userSpaceOnUse">
+                    <rect x="0" y="0" width="4" height="4" fill='#eaeaea'/>
                 </pattern>
             </defs>
             <Background bitmap={bitmap} clipBy={this.clipBy()} />
@@ -59,5 +59,10 @@ var MapCanvas = React.createClass({
         </svg>
     }
 });
+
+//
+//                     <path d="M0,0L4,4M3,-1L5,1M-1,3L1,5" stroke='gray' strokeWidth='1'/>
+
+
 
 module.exports = Redux.connect()(MapCanvas);
