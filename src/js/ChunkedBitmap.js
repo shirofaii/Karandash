@@ -9,12 +9,16 @@ import {sideInTiles, tileInPixels, sideInPixels} from './const.js'
     * canvas size very big, limited by (sint15 * sideInTiles)
 */
 
+const defaultChunks = {
+    '0': new Uint8Array(Math.ceil(sideInTiles*sideInTiles/8)),
+    '1': new Uint8Array(Math.ceil(sideInTiles*sideInTiles/8)).fill(255)
+}
+
 class ChunkedBitmap {
     on(canvas) {
         this.state = canvas.chunks
         if(this.defaultTile !== canvas.defaultBackgroundTile) {
             this.defaultTile = canvas.defaultBackgroundTile
-            this.defaultChunk = this.newChunk()
         }
         return this
     }
@@ -22,7 +26,7 @@ class ChunkedBitmap {
     // x, y: canvas coords
     chunkAt(x, y) {
         var result = this.state.get(ChunkedBitmap.encodeXY(x, y))
-        if(!result) return this.defaultChunk
+        if(!result) return defaultChunks[this.defaultTile]
 
         return result
     }
