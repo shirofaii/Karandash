@@ -1,5 +1,5 @@
 var imm = require('immutable');
-var Bitmap = require('../chunk.js')
+var ChunkedBitmap = require('../ChunkedBitmap.js')
 
 var Canvas = imm.Record({
     pen: null,
@@ -9,7 +9,7 @@ var Canvas = imm.Record({
     chunks: imm.Map()
 })
 
-var bitmap = new Bitmap()
+var bitmap = new ChunkedBitmap()
 
 function reducer(state = new Canvas(), action) {
     switch (action.type) {

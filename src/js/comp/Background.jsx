@@ -1,7 +1,7 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var Redux = require('react-redux');
-var ChunkedBitmap = require('../chunk.js')
+var ChunkedBitmap = require('../ChunkedBitmap.js')
 var Chunk = require('./Chunk.jsx')
 import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
 
@@ -26,7 +26,7 @@ var Background = React.createClass({
         for(var x = this.props.clipBy.x1; x <= this.props.clipBy.x2 + sideInPixels; x += sideInPixels) {
             for(var y = this.props.clipBy.y1; y <= this.props.clipBy.y2 + sideInPixels; y += sideInPixels) {
                 var p = ChunkedBitmap.getChunkCoordsForPoint(x, y)
-                result.push(<Chunk x={p.x} y={p.y} bitmap={this.props.bitmap} key={p.x + ',' + p.y} chunk={this.props.bitmap.chunkAt(x, y)} />)
+                result.push(<Chunk x={p.x} y={p.y} bitmap={this.props.bitmap} key={p.x + ',' + p.y} chunk={this.props.bitmap.chunkAt(p.x*sideInTiles, p.y*sideInTiles)} />)
             }
         }
         return result

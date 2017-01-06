@@ -1,7 +1,7 @@
 var React = require('react');
 var Redux = require('react-redux');
 var _ = require('lodash');
-var ChunkedBitmap = require('../chunk.js')
+var ChunkedBitmap = require('../ChunkedBitmap.js')
 
 import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
 import {Plotter} from '../plotter.js'
