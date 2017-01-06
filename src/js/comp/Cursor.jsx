@@ -5,7 +5,7 @@ var imm = require('immutable')
 var camera = require('../action/camera.js')
 var canvas = require('../action/canvas.js')
 
-var ChunkedBitmap = require('../chunk.js')
+var ChunkedBitmap = require('../ChunkedBitmap.js')
 
 import {sideInTiles, tileInPixels, sideInPixels} from '../const.js'
 

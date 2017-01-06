@@ -18,15 +18,15 @@ class ChunkedBitmap {
         }
         return this
     }
-    
+
     // x, y: canvas coords
     chunkAt(x, y) {
         var result = this.state.get(ChunkedBitmap.encodeXY(x, y))
         if(!result) return this.defaultChunk
-        
+
         return result
     }
-    
+
     // x, y: canvas coords
     getTile(x, y) {
         var chunk = this.chunkAt(x, y)
@@ -34,30 +34,36 @@ class ChunkedBitmap {
         var cy = y % sideInTiles
         if(cx < 0) cx += sideInTiles
         if(cy < 0) cy += sideInTiles
-        
-        return chunk[cy*sideInTiles + cx]
+
+        const bi = cy*sideInTiles + cx
+        return chunk[bi>>3] >> (bi % 8) & 1
     }
-    
+
     // x, y: canvas coords
     setTile(x, y, tile) {
         var chunk = this.chunkAt(x, y)
         // cx, cy: chunk coords
         var cx = x % sideInTiles
         var cy = y % sideInTiles
-        
+
         if(cx < 0) cx += sideInTiles
         if(cy < 0) cy += sideInTiles
-        
+
+        const bi = cy*sideInTiles + cx
+        const bi8 = bi % 8
+
         // its common to set tile on each mouse event, so avoid unnesessary mutations
-        if(!chunk || chunk[cy*sideInTiles + cx] !== tile) {
+        if(!chunk || (chunk[bi>>3] >> bi8 & 1) !== tile) {
             // copy chunk binary data, state must be immutable
-            var editable = this.newArray(chunk)
-            editable[cy*sideInTiles + cx] = tile
-            
+            let editable = this.newArray(chunk)
+            let byte = editable[bi>>3]
+            byte ^= (-tile ^ byte) & (1 << bi8)
+            editable[bi>>3] = byte
+
             this.applyChunk(x, y, editable)
         }
     }
-    
+
     newArray(from) {
         if(from) {
             return Uint8Array.from(from)
@@ -65,26 +71,26 @@ class ChunkedBitmap {
             return this.newChunk()
         }
     }
-    
+
     newChunk() {
-        var result = new Uint8Array(sideInTiles*sideInTiles)
+        var result = new Uint8Array(Math.ceil(sideInTiles*sideInTiles/8))
         result.fill(this.defaultTile)
         return result
     }
-    
+
     // set changed (or new) background into the state
     // x, y: canvas coords
-    applyChunk(x, y, bitmap) {  
+    applyChunk(x, y, bitmap) {
         this.state = this.state.set(ChunkedBitmap.encodeXY(x, y), bitmap)
     }
-    
+
     line(x0, y0, x1, y1, tile) {
         var dx = Math.abs(x1 - x0)
         var dy = -Math.abs(y1 - y0)
         var sx = x0 < x1 ? 1 : -1;
         var sy = y0 < y1 ? 1 : -1;
         var err = dx + dy;
-        
+
         while (true) {
             if(x0 === x1 && y0 === y1) break;
             var e2 = 2 * err;
@@ -98,7 +104,7 @@ class ChunkedBitmap {
             this.setTile(x0, y0, tile);
         }
     }
-    
+
     /*
         Encode x and y into 31 unsigned int
         Used as hash for chunks map
@@ -109,11 +115,11 @@ class ChunkedBitmap {
     static encodeXY(x, y) {
         return ((Math.floor(x / sideInTiles) + 16383) << 15) + Math.floor(y / sideInTiles) + 16383
     }
-    
+
     static decodeXY(i) {
         return {x: (i >>> 15) - 16383, y: (i & 0x00007fff) - 16383}
     }
-    
+
     /*
         in: coords in pixels
         out: point with tile coords

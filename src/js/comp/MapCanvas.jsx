@@ -3,7 +3,7 @@ var Redux = require('react-redux')
 var imm = require('immutable')
 
 var Chunk = require('./Chunk.jsx')
-var ChunkedBitmap = require('../chunk.js')
+var ChunkedBitmap = require('../ChunkedBitmap.js')
 var _ = require('lodash')
 var Cursor = require('./Cursor.jsx')
 var Background = require('./Background.jsx')
